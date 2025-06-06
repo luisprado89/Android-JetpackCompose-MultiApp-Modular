@@ -1,0 +1,74 @@
+[versions]
+agp = "8.10.1"
+kotlin = "2.0.0"
+coreKtx = "1.16.0"
+junit = "4.13.2"
+junitVersion = "1.2.1"
+espressoCore = "3.6.1"
+lifecycleRuntimeKtx = "2.9.1"
+activityCompose = "1.10.1"
+composeBom = "2025.06.00"
+navigationCompose = "2.9.0"
+playServicesAnalyticsImpl = "18.2.0"
+androidx_activity = "1.10.1"
+
+# Bases de datos y compras dentro de la app
+roomRuntime = "2.7.1"  # Room Database
+billingKtx = "7.1.1"  # Facturación de Google Play
+
+# Networking
+okhttp = "4.11.0"  # Cliente HTTP OkHttp
+retrofit = "2.9.0"  # Retrofit para API REST
+retrofit2KotlinxSerializationConverter = "1.0.0"  # Conversión con kotlinx.serialization
+converterScalars = "2.9.0"  # Conversión de cadenas en Retrofit
+
+# Almacenamiento de datos
+datastorePreferences = "1.1.7"  # Jetpack DataStore Preferences
+
+
+
+[libraries]
+androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx_activity" }
+
+androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel" }
+androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleRuntimeKtx" }
+junit = { group = "junit", name = "junit", version.ref = "junit" }
+androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
+androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+androidx-lifecycle-runtime-ktx = { group = "androidx.lifecycle", name = "lifecycle-runtime-ktx", version.ref = "lifecycleRuntimeKtx" }
+androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
+androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
+androidx-ui = { group = "androidx.compose.ui", name = "ui" }
+androidx-ui-graphics = { group = "androidx.compose.ui", name = "ui-graphics" }
+androidx-ui-tooling = { group = "androidx.compose.ui", name = "ui-tooling" }
+androidx-ui-tooling-preview = { group = "androidx.compose.ui", name = "ui-tooling-preview" }
+androidx-ui-test-manifest = { group = "androidx.compose.ui", name = "ui-test-manifest" }
+androidx-ui-test-junit4 = { group = "androidx.compose.ui", name = "ui-test-junit4" }
+androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
+play-services-analytics-impl = { group = "com.google.android.gms", name = "play-services-analytics-impl", version.ref = "playServicesAnalyticsImpl" }
+
+# Dependencias de Room (Base de datos local)
+androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "roomRuntime" }  # Procesador de anotaciones para Room
+androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "roomRuntime" }  # Extensiones KTX para Room
+androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "roomRuntime" }  # Implementación en tiempo de ejecución de Room
+
+# Facturación en Google Play
+billing-ktx = { group = "com.android.billingclient", name = "billing-ktx", version.ref = "billingKtx" }  # API de facturación de Google Play con KTX
+
+
+# Dependencias de networking
+retrofit = { module = "com.squareup.retrofit2:retrofit", version.ref = "retrofit" }  # Cliente HTTP Retrofit
+retrofit2-kotlinx-serialization-converter = { module = "com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter", version.ref = "retrofit2KotlinxSerializationConverter" }  # Conversión con kotlinx.serialization
+okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }  # Cliente HTTP OkHttp
+converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterScalars" }  # Conversión de JSON con Gson en Retrofit
+
+# Almacenamiento de datos
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }  # Jetpack DataStore Preferences
+
+[plugins]
+android-application = { id = "com.android.application", version.ref = "agp" }
+kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
+kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+
