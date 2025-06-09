@@ -23,4 +23,23 @@ interface DiscoDao {
 
     @Delete
     suspend fun delete(disco: Disco)
+
+
+    // 🔍 Función añadida para verificar duplicados
+    @Query("""
+        SELECT * FROM disco 
+        WHERE titulo = :titulo 
+          AND autor = :autor 
+          AND numCanciones = :numCanciones 
+          AND publicacion = :publicacion 
+          AND valoracion = :valoracion
+        LIMIT 1
+    """)
+    suspend fun buscarDiscoDuplicado(
+        titulo: String,
+        autor: String,
+        numCanciones: Int,
+        publicacion: Int,
+        valoracion: Int
+    ): Disco?
 }

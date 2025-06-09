@@ -59,8 +59,8 @@ class EditDiscoViewModel(
                 discoDetails.publicacion.toIntOrNull() in 1000..2029
     }
 
-    companion object {
-        const val editIdArg = "editId"
-    }
+//    companion object {
+//        const val editIdArg = "editId"
+//    }
 }
 

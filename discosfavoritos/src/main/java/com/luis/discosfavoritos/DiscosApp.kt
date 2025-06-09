@@ -14,6 +14,7 @@ import androidx.compose.material3.TopAppBarScrollBehavior
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.luis.discosfavoritos.ui.navigation.AppNavHost
@@ -61,4 +62,17 @@ fun ListaDiscosTopAppBar(
             }
         }
     )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun ListaDiscosTopAppBarPreview() {
+    MaterialTheme {
+        ListaDiscosTopAppBar(
+            title = "DiscosApp",
+            canNavigateBack = true,
+            navigateUp = {} // Acción vacía para la preview
+        )
+    }
 }

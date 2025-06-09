@@ -34,8 +34,12 @@ fun AppNavHost(
                     navController.navigate("${DetailDestination.route}/$it")
                 },
                 modifier = modifier,
+
+
                 //Esta linea es para navegar a editar
                 onNavigateToEdit = { id -> navController.navigate("edit/$id") },
+
+
             )
         }
         composable(AddDestination.route) {
@@ -55,6 +59,8 @@ fun AppNavHost(
                 modifier = modifier,
             )
         }
+
+
         //Este composable es para ir a editar
         composable(
             route = EditDestination.routeWithArgs,
@@ -66,6 +72,8 @@ fun AppNavHost(
                 onNavigateBack = { navController.popBackStack() }
             )
         }
+
+
 
 
     }

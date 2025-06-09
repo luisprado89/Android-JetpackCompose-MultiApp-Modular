@@ -11,10 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.luis.discosfavoritos2.ListaDiscosTopAppBar
 import com.luis.discosfavoritos2.ui.AppViewModelProvider
 import com.luis.discosfavoritos2.ui.add.DiscoDetails
 import com.luis.discosfavoritos2.ui.add.DiscoDetailsForm
+import com.luis.discosfavoritos2.ui.components.ListaDiscosTopAppBar
 import kotlinx.coroutines.launch
 
 object EditDestination : com.luis.discosfavoritos2.ui.navigation.NavigationDestination {
@@ -38,7 +38,7 @@ fun EditDiscoScreen(
             ListaDiscosTopAppBar(
                 title = "Editar disco",
                 canNavigateBack = true,
-                navigateUp = onNavigateBack
+                navigateBack = onNavigateBack
             )
         },
     ) { padding ->
@@ -57,7 +57,7 @@ fun EditDiscoScreen(
                 onClick = {
                     coroutineScope.launch {
                         viewModel.saveDisco()
-                        onNavigateBack()
+                        onNavigateBack()//Esto hacer que al hacer click en guardar cambiar vuelva a la pantalla de atras
                     }
                 },
                 enabled = state.isSaveButtonEnabled,
@@ -97,7 +97,7 @@ fun EditDiscoScreenPreview() {
                 ListaDiscosTopAppBar(
                     title = "Editar disco",
                     canNavigateBack = true,
-                    navigateUp = {}
+                    navigateBack = {}
                 )
             },
         ) { padding ->

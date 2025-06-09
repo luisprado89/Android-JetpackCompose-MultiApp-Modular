@@ -20,11 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.luis.discosfavoritos2.ListaDiscosTopAppBar
 import com.luis.discosfavoritos2.ui.AppViewModelProvider
 import com.luis.discosfavoritos2.ui.add.DiscoDetails
+import com.luis.discosfavoritos2.ui.components.ListaDiscosTopAppBar
 import com.luis.discosfavoritos2.ui.navigation.NavigationDestination
 
 object DetailDestination : NavigationDestination {
@@ -46,8 +47,51 @@ fun DetailScreen(
             ListaDiscosTopAppBar(
                 title = DetailDestination.title,
                 canNavigateBack = true,
-                navigateUp = onNavigateBack
+                navigateBack = onNavigateBack
             )
+
+
+
+
+
+
+        /*  Si nos pidiera reutilizar el mismo composable para la barra superior en todas las
+        pantallas, pasandole el titulo cuando este cambia y un booleano para saber si tiene que
+        mostrar el icono de navegar hacia la pantalla anterior
+
+
+
+
+        CenterAlignedTopAppBar(
+                title = { Text("Detail") },
+                modifier = modifier,
+                colors = TopAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary,
+                    scrolledContainerColor = MaterialTheme.colorScheme.primary,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                    titleContentColor = MaterialTheme.colorScheme.onPrimary,
+                    actionIconContentColor = MaterialTheme.colorScheme.onPrimary,
+                ),
+                navigationIcon = {
+                    IconButton(
+                        onClick = onNavigateBack
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            //contentDescription = stringResource(string.back_button)
+                            contentDescription = "Back"
+
+                        )
+                    }
+                }
+            )
+ */
+
+
+
+
+
+
         },
     ){
         DetailsBody(
@@ -125,5 +169,33 @@ fun RatingRow(label: String, selectedRating: Int) {
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun DetailScreenPreview() {
+    val fakeDiscoDetails = DiscoDetails(
+        titulo = "Álbum Ejemplo",
+        autor = "Artista Ficticio",
+        numCanciones = "10",
+        publicacion = "2023",
+        valoracion = "4"
+    )
+
+    Scaffold(
+        topBar = {
+            ListaDiscosTopAppBar(
+                title = DetailDestination.title,
+                canNavigateBack = true,
+                navigateBack = {} // acción vacía para preview
+            )
+        }
+    ) { padding ->
+        DetailsBody(
+            discoDetails = fakeDiscoDetails,
+            modifier = Modifier.padding(padding)
+        )
     }
 }

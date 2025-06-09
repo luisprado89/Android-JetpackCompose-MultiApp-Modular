@@ -5,7 +5,9 @@ import androidx.room.PrimaryKey
 
 @Entity
 data class Disco(
-    @PrimaryKey(autoGenerate = true) val id: Int = 0,
+    @PrimaryKey(autoGenerate = true)
+    val id: Int = 0,
+
     val titulo: String,
     val autor: String,
     val numCanciones: Int,

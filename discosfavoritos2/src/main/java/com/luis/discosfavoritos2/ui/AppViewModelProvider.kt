@@ -11,6 +11,9 @@ import com.luis.discosfavoritos2.ui.detail.DetailViewModel
 import com.luis.discosfavoritos2.ui.edit.EditDiscoViewModel
 import com.luis.discosfavoritos2.ui.home.HomeViewModel
 
+fun CreationExtras.discosApp(): DiscosApplication =
+    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as DiscosApplication)
+
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
@@ -25,6 +28,9 @@ object AppViewModelProvider {
                 discosApp().appContainer.provideDiscoRepository()
             )
         }
+
+
+        //Añadido para editar
         initializer {
             EditDiscoViewModel(
                 this.createSavedStateHandle(),
@@ -32,8 +38,8 @@ object AppViewModelProvider {
             )
         }
 
+
+
+
     }
 }
-
-fun CreationExtras.discosApp(): DiscosApplication =
-    (this[ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY] as DiscosApplication)

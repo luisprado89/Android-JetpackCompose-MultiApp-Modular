@@ -16,7 +16,8 @@ import kotlin.math.pow
 
 data class HomeUiState(
     val discoList: List<Disco> = listOf(),
-    val valoracionMedia: Double = 0.0,
+    //val valoracionMedia: Double = 0.0,
+    val valoracionMedia: String = "0.00", // ← ahora es String
     val showDeleteDialog: Boolean = false,
     val discoToDelete: Disco? = null
 )
@@ -27,12 +28,20 @@ class HomeViewModel(
     private val _homeUiState = MutableStateFlow(HomeUiState())
     val homeUiState: StateFlow<HomeUiState> = _homeUiState.asStateFlow()
 
+    companion object {
+        private const val TIMEOUT_MILLIS = 5000L
+    }
+
+
     init {
         viewModelScope.launch {
             discoRepository.getAll().map { discos ->
                 var valoracionMedia = discos.map { it.valoracion.toDouble() }.average()
                 // Limitamos los decimales de valoracionMedia a 2
-                valoracionMedia = (valoracionMedia * 10.0.pow(2)).toLong() / 10.0.pow(2)
+                //valoracionMedia = (valoracionMedia * 10.0.pow(2)).toLong() / 10.0.pow(2)
+                //Calculamos la media de tipo string aunque viene de tipo Double
+                .let { "%.2f".format(it) } // ← produce un String como "4.25"o "10.35"
+
                 HomeUiState(discoList = discos, valoracionMedia = valoracionMedia)
             }.stateIn(
                 scope = viewModelScope,
@@ -62,8 +71,16 @@ class HomeViewModel(
             }
         }
     }
-    companion object {
-        private const val TIMEOUT_MILLIS = 5000L
+
+
+    // Este es para poder añadir una barra de busqueda, con esto filtrariamos el nombre del titulo
+    private val _searchText = MutableStateFlow("")
+    val searchText: StateFlow<String> = _searchText.asStateFlow()
+
+    // Cambiar texto de búsqueda
+    fun onSearchTextChange(newText: String) {
+        _searchText.value = newText
     }
+
 }
 

@@ -14,6 +14,39 @@ data class AddUiState(
     val isSaveButtonEnabled: Boolean = false
 )
 
+
+data class DiscoDetails(
+    val id: Int = 0,
+    val titulo: String = "",
+    val autor: String = "",
+    val numCanciones: String = "",
+    val publicacion: String = "",
+    var valoracion: String = "1",
+)
+
+fun Disco.toDiscoDetails(): DiscoDetails {
+    return DiscoDetails(
+        id = id,
+        titulo = titulo,
+        autor = autor,
+        numCanciones = numCanciones.toString(),
+        publicacion = publicacion.toString(),
+        valoracion = valoracion.toString()
+    )
+}
+
+fun DiscoDetails.toDisco(): Disco {
+    return Disco(
+        id = id,
+        titulo = titulo,
+        autor = autor,
+        numCanciones = numCanciones.toInt(),
+        publicacion = publicacion.toInt(),
+        valoracion = valoracion.toInt()
+    )
+}
+
+
 class AddViewModel(
     private val discoRepository: DiscoRepository,
 ) : ViewModel() {
@@ -45,35 +78,4 @@ class AddViewModel(
                     && discoDetails.numCanciones.toInt() < 100 && discoDetails.publicacion.toInt() < 2030
         }
     }
-}
-
-data class DiscoDetails(
-    val id: Int = 0,
-    val titulo: String = "",
-    val autor: String = "",
-    val numCanciones: String = "",
-    val publicacion: String = "",
-    var valoracion: String = "1",
-)
-
-fun Disco.toDiscoDetails(): DiscoDetails {
-    return DiscoDetails(
-        id = id,
-        titulo = titulo,
-        autor = autor,
-        numCanciones = numCanciones.toString(),
-        publicacion = publicacion.toString(),
-        valoracion = valoracion.toString()
-    )
-}
-
-fun DiscoDetails.toDisco(): Disco {
-    return Disco(
-        id = id,
-        titulo = titulo,
-        autor = autor,
-        numCanciones = numCanciones.toInt(),
-        publicacion = publicacion.toInt(),
-        valoracion = valoracion.toInt()
-    )
 }

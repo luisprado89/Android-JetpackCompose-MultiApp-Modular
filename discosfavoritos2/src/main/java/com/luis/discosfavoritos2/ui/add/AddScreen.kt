@@ -1,5 +1,6 @@
 package com.luis.discosfavoritos2.ui.add
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,12 +24,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.luis.discosfavoritos2.ListaDiscosTopAppBar
 import com.luis.discosfavoritos2.ui.AppViewModelProvider
+import com.luis.discosfavoritos2.ui.components.ListaDiscosTopAppBar
 import com.luis.discosfavoritos2.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 
@@ -44,13 +46,15 @@ fun AddScreen(
     modifier: Modifier = Modifier,
     viewModel: AddViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
+    val context = LocalContext.current//  mostrar Toast, Obtiene el contexto actual de la aplicación, permite acceder a recursos y funciones del sistema,
+
     val coroutineScope = rememberCoroutineScope()
     Scaffold(
         topBar = {
             ListaDiscosTopAppBar(
                 title = AddDestination.title,
                 canNavigateBack = true,
-                navigateUp = onNavigateBack
+                navigateBack = onNavigateBack
             )
         },
     ){
@@ -59,9 +63,27 @@ fun AddScreen(
             onValueChange = viewModel::updateUiState,
             onAdd = {
                 coroutineScope.launch {
-                    viewModel.saveDisco()
-                }
+                //se comenta desde aqui si quisieramos el toast
+//                    viewModel.saveDisco()
+//                }
+//                onNavigateBack()
+
+
+                //Si quisieramos que lanse un Toas con mensaje de disco ya existe
+
+                val result = viewModel.saveDisco()
+                if (result) {
                 onNavigateBack()
+                } else {
+                Toast.makeText(
+                    context,
+                    "El disco ya existe",
+                    Toast.LENGTH_SHORT
+                    ).show()
+                }
+              }
+
+
             },
             modifier = modifier.padding(it),
 
@@ -77,7 +99,9 @@ fun AddBody(
     modifier: Modifier
 ) {
     Column (
-        modifier = modifier.padding(16.dp).fillMaxSize(),
+        modifier = modifier
+            .padding(16.dp)
+            .fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Top
     ) {
@@ -113,8 +137,8 @@ fun DiscoDetailsForm(
         FormRow(
             label = "Número de canciones",
             value = discoDetails.numCanciones,
-            onValueChange = { onValueChange(discoDetails.copy(numCanciones = it.filter { ch -> ch.isDigit() }.take(3))) },
-            keyboardType = KeyboardType.Number, // SOLO NÚMEROS, 3 cifras máximo
+            onValueChange = { onValueChange(discoDetails.copy(numCanciones = it.filter { ch -> ch.isDigit() }.take(2))) },
+            keyboardType = KeyboardType.Number, // SOLO NÚMEROS, 2 cifras máximo
             errorMessage = numCancionesError(discoDetails.numCanciones)
         )
         FormRow(
@@ -126,7 +150,7 @@ fun DiscoDetailsForm(
         )
         RatingRow(
             label = "Valoración",
-            selectedRating = discoDetails.valoracion.toIntOrNull() ?: 1,
+            selectedRating = discoDetails.valoracion.toIntOrNull() ?: 1,//La valoración no puede ser menor a 1 ni superior a 5.
             onRatingChange = { onValueChange(discoDetails.copy(valoracion = it.toString())) }
         )
     }
@@ -139,8 +163,9 @@ fun FormRow(
     label: String,
     value: String,
     onValueChange: (String) -> Unit,
+
     keyboardType: KeyboardType = KeyboardType.Text, // <- Añadido valor por defecto
-    errorMessage: String? = null
+    errorMessage: String? = null//<- Añadido para mostrar un mensaje de error
 ) {
     Row(
         modifier = Modifier
@@ -210,7 +235,7 @@ fun numCancionesError(numCanciones: String): String? {
         numCanciones.isBlank() -> null
         !numCanciones.all { it.isDigit() } -> "Solo se permiten números"
         n == null -> "Introduce un número"
-        n <= 0 || n >= 999 -> "Entre 1 y 999"
+        n < 1 || n > 99 -> "Entre 1 y 99"
         else -> null
     }
 }
@@ -221,7 +246,7 @@ fun anioError(anio: String): String? {
         anio.isBlank() -> null
         !anio.all { it.isDigit() } -> "Solo se permiten números"
         n == null -> "Introduce un año"
-        n < 1000 || n > 2029 -> "Entre 1000 y 2029"
+        n < 1000 || n > 2030 -> "Entre 1000 y 2030"
         else -> null
     }
 }
@@ -229,4 +254,55 @@ fun anioError(anio: String): String? {
 @Composable
 fun RattingRowPreview() {
     RatingRow(label = "Valoración", selectedRating = 3, onRatingChange = {})
+}
+
+
+@Preview(showBackground = true)
+@Composable
+fun AddBodyPreview() {
+    AddBody(
+        addUiState = AddUiState(
+            discoDetails = DiscoDetails(
+                titulo = "Hybrid Theory",
+                autor = "Linkin Park",
+                numCanciones = "12",
+                publicacion = "2000",
+                valoracion = "4"
+            ),
+            isSaveButtonEnabled = true
+        ),
+        onValueChange = {},
+        onAdd = {},
+        modifier = Modifier
+    )
+}
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview(showBackground = true)
+@Composable
+fun AddScreenPreview() {
+    Scaffold(
+        topBar = {
+            ListaDiscosTopAppBar(
+                title = "Añadir disco",
+                canNavigateBack = true,
+                navigateBack = {}
+            )
+        }
+    ) { padding ->
+        AddBody(
+            addUiState = AddUiState(
+                discoDetails = DiscoDetails(
+                    titulo = "Hybrid Theory",
+                    autor = "Linkin Park",
+                    numCanciones = "12",
+                    publicacion = "2000",
+                    valoracion = "4"
+                ),
+                isSaveButtonEnabled = true
+            ),
+            onValueChange = {},
+            onAdd = {},
+            modifier = Modifier.padding(padding)
+        )
+    }
 }

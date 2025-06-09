@@ -12,6 +12,7 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             AndroidJetpackComposeMultiAppModularTheme {
+                //llama al composable que esta dentro de DisosApp.kt quien usa AppNavGraph
                 ListaDiscosApp()
             }
         }
