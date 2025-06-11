@@ -12,6 +12,7 @@ import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -23,8 +24,10 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarColors
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
@@ -32,17 +35,23 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luis.listacomprapersistente.ui.AppViewModelProvider
 import com.luis.listacomprapersistente.ui.navigation.NavigationDestination
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.luis.listacomprapersistente.data.Product
+import com.luis.listacomprapersistente.ui.components.ListaTopAppBar
 import kotlinx.coroutines.launch
 
 object ListDestination : NavigationDestination{
     override val route = "list"
+    override val title = "Lista de la compra"
 }
 
 
@@ -57,6 +66,25 @@ fun ListScreen (
 
     ) {
     val state by viewModel.listUiState.collectAsState()
+
+    // Comportamiento del scroll para la TopAppBar
+    val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
+
+
+
+    Scaffold(
+        modifier = modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
+        topBar = {
+            //Estamos usando el @Composable
+            //fun ListaDiscosTopAppBar(  que esta en ListaDiscosTopAppBar.kt
+            ListaTopAppBar(
+                title = ListDestination.title,
+                canNavigateBack = false,//Cuando sea true muestra el boton de Back
+                scrollBehavior = scrollBehavior
+            )
+        },
+
+    /*
     Scaffold (
         topBar = {
             TopAppBar(
@@ -70,6 +98,8 @@ fun ListScreen (
                 )
             )
         },
+
+*/
         floatingActionButton = {
             FloatingActionButton(
                 onClick = navigateToAddProduct,
@@ -183,18 +213,75 @@ fun ProductItem(
                     contentDescription = "Editar Producto"
                 )
             }
-            IconButton(
-                onClick = onDelete
-            ) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Eliminar Producto"
-                )
-            }
+
+//            Este solo tiene el boton de borrar
+//            IconButton(
+//                onClick = onDelete
+//            ) {
+//                Icon(
+//                    imageVector = Icons.Default.Delete,
+//                    contentDescription = "Eliminar Producto"
+//                )
+//            }
+
+            // Aquí nuestro botón con diálogo de confirmación en el caso de querer meterlo sin modificar el viewmodel
+            ConfirmDeleteButton(
+                name = product.name,
+                onConfirmDelete = onDelete
+            )
+
 
         }
     }
 }
+
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ConfirmDeleteButton(
+    name: String,
+    onConfirmDelete: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var showDialog by remember { mutableStateOf(false) }
+
+    IconButton(
+        onClick = { showDialog = true },
+        modifier = modifier
+    ) {
+        Icon(
+            imageVector = Icons.Default.Delete,
+            contentDescription = "Eliminar Producto $name"
+        )
+    }
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text("Confirmación de borrado") },
+            text = { Text("¿Estás seguro de que quieres eliminar “$name”?") },
+            confirmButton = {
+                TextButton(onClick = {
+                    onConfirmDelete()
+                    showDialog = false
+                }) {
+                    Text("Borrar")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text("Cancelar")
+                }
+            }
+        )
+    }
+}
+
+
+
+
+
+
 
 @Preview(showBackground = true)
 @Composable

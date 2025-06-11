@@ -100,9 +100,9 @@ class AddViewModel(
         val nuevoDisco = addUiState.discoDetails.toDisco()
 
         // Comprobación manual de duplicado
-        if (discoRepository.discoYaExiste(nuevoDisco)) {
-        return false
-        }
+//        if (discoRepository.discoYaExiste(nuevoDisco)) {
+//        return false
+//        }
 
         // Inserta si no existe
         discoRepository.insert(nuevoDisco)

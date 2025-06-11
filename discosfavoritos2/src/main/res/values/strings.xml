@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">DiscosFavoritos2</string>
-    <string name="disco_entry_title">Nuevo Disco</string>
-    <string name="average_rating">"Valoración media: %1$s"</string>
+    <!-- <string name="disco_entry_title">Nuevo Disco</string> -->
+
+    <!-- <string name="average_rating">"Valoración media: %1$s"</string> -->
     <string name="delete_button">Borrar</string>
     <string name="no_discos">No hay discos añadidos todavía</string>
     <string name="delete_dialog_title">Confirmación de borrado</string>

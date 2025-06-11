@@ -1,6 +1,5 @@
 package com.luis.listacompraexamenbd.ui.viewmodel
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.luis.listacompraexamenbd.data.Product
@@ -18,13 +17,13 @@ import kotlin.text.isBlank
 import kotlin.text.toFloatOrNull
 import kotlin.text.trim
 
-
+// --------------------------------------------------
+// UiState SIN showError ni errorMessage
+// --------------------------------------------------
 data class ProductListUiState(
     val products: List<Product> = emptyList(),
     val nameInput: String = "",
-    val priceInput: String = "",
-    val showError: Boolean = false,
-    val errorMessage: String = ""
+    val priceInput: String = ""
 )
 
 class ProductListViewModel(
@@ -39,18 +38,18 @@ class ProductListViewModel(
     }
 
     private fun loadProducts() {
+        // Inserción inicial de productos falsos si la BD está vacía
         viewModelScope.launch {
-            productRepository.getAllProductsStream().collect { products ->
-                if (products.isEmpty()) {
-                    // Insertar productos aleatorios al iniciar si la base está vacía
-                    val fakeProducts = getFakeProducts()
-                    productRepository.insertProducts(fakeProducts)
+            productRepository.getAllProductsStream().collect { productos ->
+                if (productos.isEmpty()) {
+                    productRepository.insertProducts(getFakeProducts())
                 }
             }
         }
+        // Observador de cambios
         viewModelScope.launch {
-            productRepository.getAllProductsStream().collect { products ->
-                _uiState.update { it.copy(products = products) }
+            productRepository.getAllProductsStream().collect { productos ->
+                _uiState.update { it.copy(products = productos) }
             }
         }
     }
@@ -63,36 +62,56 @@ class ProductListViewModel(
         _uiState.update { it.copy(priceInput = newValue) }
     }
 
+    /**
+     * Devuelve `true` si el producto se insertó correctamente,
+     * `false` si falló la validación (nombre/precio vacíos, precio <= 0 o duplicado).
+     * En la UI podrás usar este Boolean para lanzar el Toast.
+     */
+//    fun addProduct(): Boolean {
+//        val name = _uiState.value.nameInput.trim()
+//        val priceText = _uiState.value.priceInput.trim()
+//
+//        // Validaciones básicas
+//        if (name.isBlank() || priceText.isBlank()) {
+//            return false
+//        }
+//        val price = priceText.toFloatOrNull()
+//        if (price == null || price <= 0f) {
+//            return false
+//        }
+//        // ¿Ya existe?
+//        if (_uiState.value.products.any { it.name.equals(name, true) }) {
+//            // opcional: limpiar inputs en caso de duplicado
+//            _uiState.update { it.copy(nameInput = "", priceInput = "") }
+//            return false
+//        }
+//
+//        // Si todo OK, inserta y limpia los inputs
+//        viewModelScope.launch {
+//            productRepository.insertProduct(Product(name, price, 1))
+//        }
+//        _uiState.update { it.copy(nameInput = "", priceInput = "") }
+//        return true
+//    }
+
+    //No necesitamos hacer comprobaciones ya que lo estamos haciendo en el ListaCompraScreen
     fun addProduct() {
         val name = _uiState.value.nameInput.trim()
-        val priceText = _uiState.value.priceInput.trim()
-        if (name.isBlank() || priceText.isBlank()) {
-            showError("El nombre y el precio no pueden estar vacíos.")
-            return
-        }
-        val price = priceText.toFloatOrNull()
-        if (price == null || price <= 0f) {
-            showError("Introduce un precio válido mayor que 0.")
-            return
-        }
-        /*
-        it.name.equals(name, true)
-        El segundo parámetro (true) indica que la comparación no distingue mayúsculas/minúsculas.
-        Así:
-        "casa".equals("Casa", true) devuelve true
-        "casa".equals("CASA", true) devuelve true
-        "casa".equals("casa", true) devuelve true
-         */
-        if (_uiState.value.products.any { it.name.equals(name, true) }) {
-            showError("El producto ya existe en la lista.")
-            _uiState.update { it.copy(nameInput = "", priceInput = "") }
-            return
-        }
+        val price = _uiState.value.priceInput.trim().toFloat() // ya has validado en la UI
+
         viewModelScope.launch {
-            productRepository.insertProduct(Product(name, price, 1))
-            _uiState.update { it.copy(nameInput = "", priceInput = "") }
+            productRepository
+                .insertProduct(Product(
+                    name,//name → el nombre que ha metido el usuario
+                    price,//el precio validado
+                    1))// 1, es decir, al añadir por primera vez el producto aparecerá con una unidad en la lista
         }
+        // limpiar inputs
+        _uiState.update { it.copy(nameInput = "", priceInput = "") }
     }
+
+
+
 
     fun addRandomProduct() {
         viewModelScope.launch {
@@ -126,21 +145,20 @@ class ProductListViewModel(
         }
     }
 
-    fun clearError() {
-        _uiState.update { it.copy(showError = false, errorMessage = "") }
-    }
-
-    private fun showError(msg: String) {
-        _uiState.update { it.copy(showError = true, errorMessage = msg) }
-    }
-
+    // --------------------------------------------------
+    // Generación de productos de ejemplo
+    // --------------------------------------------------
     fun getFakeProducts(size: Int = 10): List<Product> {
         val usedNames = mutableSetOf<String>()
         val productList = mutableListOf<Product>()
         while (productList.size < size) {
             val p = getFakeProduct()
             if (usedNames.add(p.name)) {
-                productList.add(p)
+                productList.add(0, p)// Inserta al principio en lugar de al final
+                //no se va a poner al principio ya que estamos llamando a getAllProductsStream
+                // dentro de loadProducts() y esto ordena el nombre de a a la z
+                //@Query("SELECT * FROM products ORDER BY name ASC")
+                //    fun getAllProducts(): Flow<List<Product>>
             }
         }
         return productList

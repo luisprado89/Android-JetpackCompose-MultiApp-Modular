@@ -36,6 +36,9 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
@@ -48,6 +51,7 @@ import com.luis.discosfavoritos2.data.Disco
 import com.luis.discosfavoritos2.ui.AppViewModelProvider
 import com.luis.discosfavoritos2.ui.components.ListaDiscosTopAppBar
 import com.luis.discosfavoritos2.ui.navigation.NavigationDestination
+import kotlinx.coroutines.coroutineScope
 
 object HomeDestination : NavigationDestination {
     override val route = "home"
@@ -135,11 +139,11 @@ fun HomeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ){
                     if (state.discoList.isEmpty()) {
-                        Text(stringResource(R.string.no_discos))
+                        Text("No hay discos añadidos todavía")
+                        //Text(stringResource(R.string.no_discos))
                     } else {
                         Text(
                             "Valoración media: ${state.valoracionMedia}",
-                            //stringResource(R.string.average_rating,state.valoracionMedia.toString()),
                             style = MaterialTheme.typography.titleLarge,)
                     }
                 }
@@ -152,12 +156,14 @@ fun HomeScreen(
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
-                    contentDescription = stringResource(R.string.disco_entry_title)
+                    contentDescription = "Nuevo Disco"
+                    //contentDescription = stringResource(R.string.disco_entry_title)
                 )
             }
         }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
+
             // Solo mostrar el buscador si hay discos en la lista
             if (state.discoList.isNotEmpty()) {
                 OutlinedTextField(
@@ -177,10 +183,14 @@ fun HomeScreen(
                 onNavigateToEdit = onNavigateToEdit,  // <-- Añadido para editar
 
                 insertarDiscosDePrueba = viewModel::insertarDiscosDePrueba,
-                onShowOrHideDeleteDialog = viewModel::onShowOrHideDeleteDialog,
-                modifier = Modifier,
+                //onShowOrHideDeleteDialog = viewModel::onShowOrHideDeleteDialog,
+                onDelete = viewModel::deleteDisco,
+                //onDelete = { disco -> viewModel.deleteDisco(disco)},
+
+                modifier = Modifier
             )
         }
+
 /*  Este es el original sin barra de busqueda
         HomeBody(
             discos = state.discoList,
@@ -196,17 +206,17 @@ fun HomeScreen(
         )
 */
 
-        if (state.showDeleteDialog) {
-            DeleteConfirmationDialog(
-                title = state.discoToDelete?.titulo ?: "",
-                onDeleteConfirm = {
-                    viewModel.deleteDisco(state.discoToDelete!!)
-                },
-                onDismiss = {
-                    viewModel.onShowOrHideDeleteDialog(false, state.discoToDelete!!)
-                }
-            )
-        }
+//        if (state.showDeleteDialog) {
+//            DeleteConfirmationDialog(
+//                title = state.discoToDelete?.titulo ?: "",
+//                onDeleteConfirm = {
+//                    viewModel.deleteDisco(state.discoToDelete!!)
+//                },
+//                onDismiss = {
+//                    viewModel.onShowOrHideDeleteDialog(false, state.discoToDelete!!)
+//                }
+//            )
+//        }
     }
 }
 
@@ -220,8 +230,8 @@ fun HomeBody(
 
     onNavigateToEdit: (Int) -> Unit,    // <--- Añadido para editar
 
-
-    onShowOrHideDeleteDialog: (Boolean, Disco) -> Unit,
+    onDelete: (Disco) -> Unit
+    //onShowOrHideDeleteDialog: (Boolean, Disco) -> Unit,
 ) {
     if (discos.isEmpty()){
         Column (
@@ -237,7 +247,7 @@ fun HomeBody(
             )
             Icon(
                 imageVector = Icons.Default.Clear,
-                contentDescription = stringResource(R.string.disco_entry_title),
+                contentDescription = "Nuevo disco",
                 modifier = Modifier.padding(16.dp).size(64.dp)
             )
             Button(
@@ -259,8 +269,8 @@ fun HomeBody(
                     onNavigateToEdit = onNavigateToEdit,//Este le añadimos para nevedar
 
 
-
-                    onShowOrHideDeleteDialog = onShowOrHideDeleteDialog
+                    onDelete = onDelete
+                    //onShowOrHideDeleteDialog = onShowOrHideDeleteDialog
 
                 )
             }
@@ -272,12 +282,11 @@ fun HomeBody(
 fun DiscoListItem(
     disco: Disco,
     onNavigateToDetail: (Int) -> Unit,
-    onShowOrHideDeleteDialog: (Boolean, Disco) -> Unit,
+    //onShowOrHideDeleteDialog: (Boolean, Disco) -> Unit,
 
+    onNavigateToEdit: (Int) -> Unit,         // <--- Añadido
 
-    onNavigateToEdit: (Int) -> Unit         // <--- Añadido
-
-
+    onDelete:  (Disco) -> Unit,
 
 ) {
     Row (
@@ -301,7 +310,7 @@ fun DiscoListItem(
                 style = MaterialTheme.typography.titleMedium)
             Text(text = disco.autor,
                 style = MaterialTheme.typography.titleSmall)
-        }
+        }//Column
         Row (
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
@@ -313,19 +322,28 @@ fun DiscoListItem(
                     tint = MaterialTheme.colorScheme.primary
                 )
             }
-        }
+        }//Row
 
-        IconButton(
-            onClick = {
-                onShowOrHideDeleteDialog(true, disco)
-            }
-        ) {
-            Icon(
-                imageVector = Icons.Default.Delete,
-                contentDescription = stringResource(R.string.delete_button),
-                tint = MaterialTheme.colorScheme.primary
-            )
-        }
+//        IconButton(
+//            onClick = {
+//                onShowOrHideDeleteDialog(true, disco)
+//            }
+//        ) {
+//            Icon(
+//                imageVector = Icons.Default.Delete,
+//                contentDescription = stringResource(R.string.delete_button),
+//                tint = MaterialTheme.colorScheme.primary
+//            )
+//        }
+        //Con esto usamos el composable
+        ConfirmDeleteButton(
+            name = disco.titulo,
+            onConfirmDelete = { onDelete(disco) }
+        )
+
+
+
+
         //Añadimos un boton para ir a editar
         IconButton(
             onClick = { onNavigateToEdit(disco.id) }
@@ -337,179 +355,192 @@ fun DiscoListItem(
             )
         }
 
-    }
+    }// Row el que contiene todo
 }
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DeleteConfirmationDialog(
-    title: String,
-    onDeleteConfirm: () -> Unit,
-    onDismiss: () -> Unit
+fun ConfirmDeleteButton(
+    name: String,
+    onConfirmDelete: () -> Unit
 ) {
-    AlertDialog(
-        onDismissRequest = onDismiss,
-        title = { Text(stringResource(R.string.delete_dialog_title)) },
-        text = { Text(stringResource(R.string.delete_dialog_message, title)) },
-        confirmButton = {
-            TextButton(onClick = {
-                onDeleteConfirm()
-                onDismiss()
-            }) {
-                Text(stringResource(R.string.delete_dialog_confirm_button))
-            }
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(stringResource(R.string.delete_dialog_dismiss_button))
-            }
-        }
-    )
-}
+    var showDialog by remember { mutableStateOf(false) }
 
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenPreview() {
-    val fakeDiscos = listOf(
-        Disco(id = 1, titulo = "Estopa", autor = "Estopa", numCanciones = 12, publicacion = 1999, valoracion = 5),
-        Disco(id = 2, titulo = "Lemonade", autor = "Beyoncé", numCanciones = 12, publicacion = 2016, valoracion = 4),
-        Disco(id = 3, titulo = "The Fame", autor = "Lady Gaga", numCanciones = 12, publicacion = 2008, valoracion = 3)
-    )
-
-    MaterialTheme {
-        HomeBody(
-            discos = fakeDiscos,
-            onNavigateToDetail = {},
-            onNavigateToEdit = {},
-            onShowOrHideDeleteDialog = { _, _ -> },
-            insertarDiscosDePrueba = {},
-            modifier = Modifier
+    // Botón de papelera
+    IconButton(onClick = { showDialog = true }) {
+        Icon(
+            imageVector = Icons.Default.Delete,
+            contentDescription = stringResource(R.string.delete_button, name)
         )
     }
-}
 
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenFullPreview() {
-    val fakeDiscos = listOf(
-        Disco(id = 1, titulo = "Estopa", autor = "Estopa", numCanciones = 12, publicacion = 1999, valoracion = 5),
-        Disco(id = 2, titulo = "Lemonade", autor = "Beyoncé", numCanciones = 12, publicacion = 2016, valoracion = 4),
-        Disco(id = 3, titulo = "The Fame", autor = "Lady Gaga", numCanciones = 12, publicacion = 2008, valoracion = 3)
-    )
-
-    val fakeState = HomeUiState(
-        discoList = fakeDiscos,
-        //valoracionMedia = 4.0,
-        valoracionMedia = "8.50",
-        showDeleteDialog = false
-    )
-
-    // No usamos ViewModel aquí, solo llamamos directamente a HomeBody con Scaffold simulado
-    Scaffold(
-        topBar = {
-            ListaDiscosTopAppBar(
-                title = HomeDestination.title,
-                canNavigateBack = false
-            )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Row (
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Text(
-                        text = stringResource(R.string.average_rating, fakeState.valoracionMedia.toString()),
-                        style = MaterialTheme.typography.titleLarge
-                    )
+    // Diálogo de confirmación
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { showDialog = false },
+            title = { Text(stringResource(R.string.delete_dialog_title)) },
+            text = { Text(stringResource(R.string.delete_dialog_message, name)) },
+            confirmButton = {
+                TextButton(onClick = {
+                    onConfirmDelete()
+                    showDialog = false
+                }) {
+                    Text(stringResource(R.string.delete_dialog_confirm_button))
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDialog = false }) {
+                    Text(stringResource(R.string.delete_dialog_dismiss_button))
                 }
             }
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = {}) {
-                Icon(Icons.Default.Add, contentDescription = null)
-            }
-        }
-    ) { innerPadding ->
-        HomeBody(
-            discos = fakeState.discoList,
-            onNavigateToDetail = {},
-            onNavigateToEdit = {},
-            onShowOrHideDeleteDialog = { _, _ -> },
-            insertarDiscosDePrueba = {},
-            modifier = Modifier.padding(innerPadding)
-        )
-    }
-}
-@Preview(showBackground = true)
-@Composable
-fun HomeBodySinDiscosPreview() {
-    MaterialTheme {
-        HomeBody(
-            discos = emptyList(), // No hay discos
-            onNavigateToDetail = {},
-            onNavigateToEdit = {},
-            onShowOrHideDeleteDialog = { _, _ -> },
-            insertarDiscosDePrueba = {}, // puedes poner { println("Insertar prueba") } si quieres ver acción en debug
-            modifier = Modifier
         )
     }
 }
 
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Preview(showBackground = true)
-@Composable
-fun HomeScreenSinDiscosPreview() {
-    val fakeState = HomeUiState(
-        discoList = emptyList(),          // Simula que no hay discos
-        //valoracionMedia = 0.0,
-        valoracionMedia = "0.0",
-        showDeleteDialog = false
-    )
-
-    Scaffold(
-        topBar = {
-            ListaDiscosTopAppBar(
-                title = HomeDestination.title,
-                canNavigateBack = false
-            )
-        },
-        bottomBar = {
-            BottomAppBar(
-                containerColor = MaterialTheme.colorScheme.primary,
-                contentColor = MaterialTheme.colorScheme.onPrimary
-            ) {
-                Row (
-                    modifier = Modifier.fillMaxSize(),
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ){
-                    Text(
-                        text = stringResource(R.string.no_discos),
-                        style = MaterialTheme.typography.titleLarge
-                    )
-                }
-            }
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = {}) {
-                Icon(Icons.Default.Add, contentDescription = null)
-            }
-        }
-    ) { innerPadding ->
-        HomeBody(
-            discos = fakeState.discoList,
-            onNavigateToDetail = {},
-            onNavigateToEdit = {},
-            onShowOrHideDeleteDialog = { _, _ -> },
-            insertarDiscosDePrueba = {},  // puedes probar con { println("Insertar prueba") }
-            modifier = Modifier.padding(innerPadding)
-        )
-    }
-}
+//
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeScreenPreview() {
+//    val fakeDiscos = listOf(
+//        Disco(id = 1, titulo = "Estopa", autor = "Estopa", numCanciones = 12, publicacion = 1999, valoracion = 5),
+//        Disco(id = 2, titulo = "Lemonade", autor = "Beyoncé", numCanciones = 12, publicacion = 2016, valoracion = 4),
+//        Disco(id = 3, titulo = "The Fame", autor = "Lady Gaga", numCanciones = 12, publicacion = 2008, valoracion = 3)
+//    )
+//
+//    MaterialTheme {
+//        HomeBody(
+//            discos = fakeDiscos,
+//            onNavigateToDetail = {},
+//            onNavigateToEdit = {},
+//            onShowOrHideDeleteDialog = { _, _ -> },
+//            insertarDiscosDePrueba = {},
+//            modifier = Modifier
+//        )
+//    }
+//}
+//
+//
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeScreenFullPreview() {
+//    val fakeDiscos = listOf(
+//        Disco(id = 1, titulo = "Estopa", autor = "Estopa", numCanciones = 12, publicacion = 1999, valoracion = 5),
+//        Disco(id = 2, titulo = "Lemonade", autor = "Beyoncé", numCanciones = 12, publicacion = 2016, valoracion = 4),
+//        Disco(id = 3, titulo = "The Fame", autor = "Lady Gaga", numCanciones = 12, publicacion = 2008, valoracion = 3)
+//    )
+//
+//    val fakeState = HomeUiState(
+//        discoList = fakeDiscos,
+//        //valoracionMedia = 4.0,
+//        valoracionMedia = "8.50",
+//        showDeleteDialog = false
+//    )
+//
+//    // No usamos ViewModel aquí, solo llamamos directamente a HomeBody con Scaffold simulado
+//    Scaffold(
+//        topBar = {
+//            ListaDiscosTopAppBar(
+//                title = HomeDestination.title,
+//                canNavigateBack = false
+//            )
+//        },
+//        bottomBar = {
+//            BottomAppBar(
+//                containerColor = MaterialTheme.colorScheme.primary,
+//                contentColor = MaterialTheme.colorScheme.onPrimary
+//            ) {
+//                Row (
+//                    modifier = Modifier.fillMaxSize(),
+//                    horizontalArrangement = Arrangement.Center,
+//                    verticalAlignment = Alignment.CenterVertically
+//                ){
+//                    Text(
+//                        text = stringResource(R.string.average_rating, fakeState.valoracionMedia.toString()),
+//                        style = MaterialTheme.typography.titleLarge
+//                    )
+//                }
+//            }
+//        },
+//        floatingActionButton = {
+//            FloatingActionButton(onClick = {}) {
+//                Icon(Icons.Default.Add, contentDescription = null)
+//            }
+//        }
+//    ) { innerPadding ->
+//        HomeBody(
+//            discos = fakeState.discoList,
+//            onNavigateToDetail = {},
+//            onNavigateToEdit = {},
+//            onShowOrHideDeleteDialog = { _, _ -> },
+//            insertarDiscosDePrueba = {},
+//            modifier = Modifier.padding(innerPadding)
+//        )
+//    }
+//}
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeBodySinDiscosPreview() {
+//    MaterialTheme {
+//        HomeBody(
+//            discos = emptyList(), // No hay discos
+//            onNavigateToDetail = {},
+//            onNavigateToEdit = {},
+//            onShowOrHideDeleteDialog = { _, _ -> },
+//            insertarDiscosDePrueba = {}, // puedes poner { println("Insertar prueba") } si quieres ver acción en debug
+//            modifier = Modifier
+//        )
+//    }
+//}
+//
+//
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Preview(showBackground = true)
+//@Composable
+//fun HomeScreenSinDiscosPreview() {
+//    val fakeState = HomeUiState(
+//        discoList = emptyList(),          // Simula que no hay discos
+//        //valoracionMedia = 0.0,
+//        valoracionMedia = "0.0",
+//        showDeleteDialog = false
+//    )
+//
+//    Scaffold(
+//        topBar = {
+//            ListaDiscosTopAppBar(
+//                title = HomeDestination.title,
+//                canNavigateBack = false
+//            )
+//        },
+//        bottomBar = {
+//            BottomAppBar(
+//                containerColor = MaterialTheme.colorScheme.primary,
+//                contentColor = MaterialTheme.colorScheme.onPrimary
+//            ) {
+//                Row (
+//                    modifier = Modifier.fillMaxSize(),
+//                    horizontalArrangement = Arrangement.Center,
+//                    verticalAlignment = Alignment.CenterVertically
+//                ){
+//                    Text(
+//                        text = stringResource(R.string.no_discos),
+//                        style = MaterialTheme.typography.titleLarge
+//                    )
+//                }
+//            }
+//        },
+//        floatingActionButton = {
+//            FloatingActionButton(onClick = {}) {
+//                Icon(Icons.Default.Add, contentDescription = null)
+//            }
+//        }
+//    ) { innerPadding ->
+//        HomeBody(
+//            discos = fakeState.discoList,
+//            onNavigateToDetail = {},
+//            onNavigateToEdit = {},
+//            onShowOrHideDeleteDialog = { _, _ -> },
+//            insertarDiscosDePrueba = {},  // puedes probar con { println("Insertar prueba") }
+//            modifier = Modifier.padding(innerPadding)
+//        )
+//    }
+//}

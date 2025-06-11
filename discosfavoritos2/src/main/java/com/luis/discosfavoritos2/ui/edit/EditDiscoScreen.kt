@@ -36,7 +36,7 @@ fun EditDiscoScreen(
     Scaffold(
         topBar = {
             ListaDiscosTopAppBar(
-                title = "Editar disco",
+                title = EditDestination.title,
                 canNavigateBack = true,
                 navigateBack = onNavigateBack
             )

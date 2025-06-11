@@ -33,6 +33,7 @@ import androidx.compose.ui.focus.onFocusChanged // Importa la función para mane
 import androidx.compose.ui.platform.LocalFocusManager // Importa la clase para manejar el enfoque local
 import androidx.compose.ui.unit.dp
 import com.luis.listacomprapersistente.ui.AppViewModelProvider
+import com.luis.listacomprapersistente.ui.components.ListaTopAppBar
 import com.luis.listacomprapersistente.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch // Importa la función para lanzar corutinas
 import kotlin.text.isBlank
@@ -40,6 +41,7 @@ import kotlin.text.isBlank
 // Objeto que representa la pantalla de actualización del producto
 object ProductUpdateDestination : NavigationDestination {
     override val route = "productUpdate" // Define la ruta para la pantalla de actualización del producto
+    override val title = "Editar Producto"
     const val productNameArg = "productName" // Define el argumento para el nombre del producto
     val routeWithArgs = "$route/{$productNameArg}" // Define la ruta con argumentos
 }
@@ -54,6 +56,16 @@ fun ProductUpdateScreen(
 ) {
     val coroutineScope = rememberCoroutineScope() // Recuerda el scope de corutinas
     // Crea un Scaffold que proporciona una estructura básica para la pantalla
+
+    Scaffold(
+        topBar = {
+            ListaTopAppBar(
+                title = ProductUpdateDestination.title,
+                canNavigateBack = true,
+                navigateBack = navigateBack
+            )
+        },
+/*
     Scaffold(
         topBar = {
             // Crea una barra de aplicación superior
@@ -72,6 +84,8 @@ fun ProductUpdateScreen(
                 }
             )
         }
+    */
+
     ) {
         // Crea una columna para organizar los elementos verticalmente
         Column(

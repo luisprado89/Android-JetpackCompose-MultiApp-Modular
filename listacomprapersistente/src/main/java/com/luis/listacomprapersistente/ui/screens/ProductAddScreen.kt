@@ -32,12 +32,14 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luis.listacomprapersistente.ui.AppViewModelProvider
+import com.luis.listacomprapersistente.ui.components.ListaTopAppBar
 import com.luis.listacomprapersistente.ui.navigation.NavigationDestination
 import kotlinx.coroutines.launch
 
 // Define un objeto que representa la pantalla de añadir productos para navegar a esta
 object ProductAddDestination : NavigationDestination {
     override val route = "productAdd" // Define la ruta de navegación para esta pantalla
+    override val title = "Añadir Procuto"
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -49,6 +51,15 @@ fun ProductAddScreen (
     ) {
     val context = LocalContext.current//  mostrar Toast, Obtiene el contexto actual de la aplicación, permite acceder a recursos y funciones del sistema,
     val coroutineScope = rememberCoroutineScope()// Crea un alcance de corutina para manejar operaciones asíncronas
+    Scaffold(
+        topBar = {
+            ListaTopAppBar(
+                title = ProductAddDestination.title,
+                canNavigateBack = true,
+                navigateBack = navigateBack
+            )
+        }
+/*
     Scaffold (// Crea una estructura de diseño con una barra superior
         topBar = {
             TopAppBar(
@@ -62,6 +73,8 @@ fun ProductAddScreen (
                 }
             )
         }
+*/
+
     ){//Scaffold
         Column (// Crea una columna para organizar los elementos verticalmente
             modifier = modifier.padding(it).fillMaxSize().padding(16.dp),// Aplica modificadores de diseño
@@ -187,31 +200,3 @@ fun AddProductForm( // Composable que representa el formulario de añadir produc
         ) { Text("Añadir") }
     }//Row
 }
-//@Preview(showBackground = true)
-//@Composable
-//fun ProductAddScreenPreview() {
-//    ProductAddScreen(
-//        navigateBack = {},
-//    )
-//}
-/*
-@Preview(showBackground = true)
-@Composable
-fun ProductAddScreenPreview3() {
-    val fakeUiState = ProductAddUiState(
-        productDetails = ProductDetails(
-            productName = "Manzana",
-            productQuantity = "2",
-            productPrice = "1,50"
-        ),
-        isSaveButtonEnabled = true
-    )
-
-    AddProductForm(
-        productAddUiState = fakeUiState,
-        onProductValueChanged = {},
-        onAdd = {},
-        navigateBack = {}
-    )
-}
-*/

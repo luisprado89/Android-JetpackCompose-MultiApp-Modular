@@ -22,11 +22,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.luis.listacomprapersistente.ui.AppViewModelProvider
+import com.luis.listacomprapersistente.ui.components.ListaTopAppBar
 import com.luis.listacomprapersistente.ui.navigation.NavigationDestination
 
 // Objeto que representa la pantalla de detalles del producto
 object ProductDetailDestination : NavigationDestination {
     override val route = "productDetails" // Define la ruta para la pantalla de detalles del producto
+    override val title = "Details Product"
     const val productNameArg = "productName" // Define el argumento para el nombre del producto
     val routeWithArgs = "$route/{$productNameArg}" // Define la ruta con argumentos
 }
@@ -39,6 +41,15 @@ fun ProductDetailScreen(
     modifier: Modifier = Modifier, // Modificador opcional para personalizar la apariencia
     viewModel: ProductDetailViewModel = viewModel(factory = AppViewModelProvider.Factory) // Obtiene el ViewModel para la pantalla
 ) {
+    Scaffold(
+        topBar = {
+            ListaTopAppBar(
+                title = ProductDetailDestination.title,
+                canNavigateBack = true,
+                navigateBack = navigateBack
+            )
+        },
+/*
     Scaffold (// Crea un Scaffold que proporciona una estructura básica para la pantalla
         topBar = {// Crea una barra de aplicación superior
             TopAppBar(
@@ -52,6 +63,8 @@ fun ProductDetailScreen(
                 }
             )
         }
+*/
+
     ) {
         // Crea una columna para organizar los elementos verticalmente
         Column (

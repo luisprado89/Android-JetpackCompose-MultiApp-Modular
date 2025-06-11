@@ -18,8 +18,6 @@ data class HomeUiState(
     val discoList: List<Disco> = listOf(),
     //val valoracionMedia: Double = 0.0,
     val valoracionMedia: String = "0.00", // ← ahora es String
-    val showDeleteDialog: Boolean = false,
-    val discoToDelete: Disco? = null
 )
 
 class HomeViewModel(
@@ -51,11 +49,6 @@ class HomeViewModel(
                 _homeUiState.value = it
             }
         }
-    }
-
-    fun onShowOrHideDeleteDialog(show: Boolean, disco: Disco) {
-        _homeUiState.value = _homeUiState.value.copy(showDeleteDialog = show, discoToDelete = disco)
-
     }
 
     fun deleteDisco(disco: Disco) {
