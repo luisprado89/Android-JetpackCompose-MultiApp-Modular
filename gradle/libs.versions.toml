@@ -23,11 +23,20 @@ retrofit2KotlinxSerializationConverter = "1.0.0"  # Conversión con kotlinx.seri
 converterScalars = "2.9.0"  # Conversión de cadenas en Retrofit
 
 # Almacenamiento de datos
-datastorePreferences = "1.1.7"  # Jetpack DataStore Preferences
+datastorePreferences = "1.1.7"
+navigationComposeJvmstubs = "2.9.0"  # Jetpack DataStore Preferences
 
 
 
 [libraries]
+
+# Para implementation(libs.androidx.runtime.android)
+androidx-runtime-android = { module = "androidx.compose.runtime:runtime" }
+
+# Para implementation(libs.androidx.ui.text.google.fonts)
+androidx-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts" }
+
+
 androidx-activity = { module = "androidx.activity:activity-ktx", version.ref = "androidx_activity" }
 
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -65,7 +74,8 @@ okhttp = { module = "com.squareup.okhttp3:okhttp", version.ref = "okhttp" }  # C
 converter-gson = { module = "com.squareup.retrofit2:converter-gson", version.ref = "converterScalars" }  # Conversión de JSON con Gson en Retrofit
 
 # Almacenamiento de datos
-androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }  # Jetpack DataStore Preferences
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+androidx-navigation-compose-jvmstubs = { group = "androidx.navigation", name = "navigation-compose-jvmstubs", version.ref = "navigationComposeJvmstubs" }  # Jetpack DataStore Preferences
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

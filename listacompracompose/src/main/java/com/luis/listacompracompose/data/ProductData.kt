@@ -1,0 +1,47 @@
+package com.luis.listacompracompose.data
+
+const val MAX_NO_OF_PRODUCTS = 100
+
+val productsExample: Set<String> =
+    setOf(
+        "Apple",
+        "Banana",
+        "Orange",
+        "Strawberry",
+        "Eggs",
+        "Milk",
+        "Bread",
+        "Butter",
+        "Cheese",
+        "Yogurt",
+        "Chicken",
+        "Beef",
+        "Pork",
+        "Fish",
+        "Shrimp",
+        "Rice",
+        "Pasta",
+        "Beans",
+        "Lentils",
+        "Tomato",
+        "Onion",
+        "Garlic",
+        "Potato",
+        "Carrot",
+        "Lettuce",
+        "Cucumber",
+        "Broccoli",
+        "Spinach",
+        "Mushroom",
+        "Zucchini",
+        "Bell pepper",
+        "Avocado",
+        "Pineapple",
+        "Watermelon",
+        "Grapes",
+        "Peach",
+        "Pear",
+        "Cherry",
+        "Blueberry",
+
+    )
